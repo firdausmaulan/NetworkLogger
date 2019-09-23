@@ -21,6 +21,6 @@ public interface NetworkLoggerDao {
     @Insert
     void insert(NetworkLoggerModel networkLoggerModel);
 
-    @Delete
-    void deleteAll(NetworkLoggerModel... networkLoggerModels);
+    @Query("DELETE FROM t_log")
+    void deleteAll();
 }

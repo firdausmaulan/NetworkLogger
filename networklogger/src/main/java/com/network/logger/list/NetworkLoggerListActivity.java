@@ -52,6 +52,7 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                networkLoggerAdapter.clear();
                 presenter.getListData(0);
             }
         });
