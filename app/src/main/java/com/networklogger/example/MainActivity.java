@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity {
             model = new NetworkLoggerModel();
             model.setMethod("GET");
             model.setStatusCode("200");
-            model.setEventName("test");
+            model.setEventName("test " + i);
             model.setUrl("https://www.test.com/");
             model.setHeader("Authorization Bearer abcde12345");
             model.setParams("{\n" +

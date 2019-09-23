@@ -19,7 +19,7 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_back" />
+            android:src="@drawable/ic_nl_back" />
 
         <ImageView
             android:id="@+id/ivDelete"
@@ -27,7 +27,7 @@
             android:layout_height="24dp"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/ic_delete" />
+            android:src="@drawable/ic_nl_delete" />
 
         <TextView
             android:layout_width="wrap_content"

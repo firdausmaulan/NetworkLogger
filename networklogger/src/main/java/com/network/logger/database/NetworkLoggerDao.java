@@ -12,7 +12,7 @@ public interface NetworkLoggerDao {
     //@Query("SELECT * FROM t_log LIMIT 10 OFFSET :currentPosition")
     //List<NetworkLoggerModel> getAll(int currentPosition);
 
-    @Query("SELECT * FROM t_log")
+    @Query("SELECT * FROM t_log ORDER BY uid DESC")
     List<NetworkLoggerModel> getAll();
 
     @Query("SELECT * FROM t_log where uid=:uid")
