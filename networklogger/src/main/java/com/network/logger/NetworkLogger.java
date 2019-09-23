@@ -40,7 +40,6 @@ public class NetworkLogger {
     private void showNotification(NetworkLoggerModel model) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, NetworkLoggerListActivity.class);
-        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "network_logger")
