@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="nl_colorPrimary">#0091EA</color>
+    <color name="nl_colorPrimaryDark">#01579B</color>
+    <color name="nl_colorAccent">#80D8FF</color>
+</resources>

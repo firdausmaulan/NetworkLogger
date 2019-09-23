@@ -1,0 +1,2 @@
+include ':app', ':networklogger'
+rootProject.name='VolleyLogger'

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.network.logger">
+
+    <application>
+        <activity
+            android:name="com.network.logger.detail.NetworkLoggerDetailActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NetworkLoggerAppTheme" />
+        <activity
+            android:name="com.network.logger.list.NetworkLoggerListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NetworkLoggerAppTheme" />
+    </application>
+
+</manifest>

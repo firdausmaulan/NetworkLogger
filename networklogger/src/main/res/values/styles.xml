@@ -1,0 +1,10 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="NetworkLoggerAppTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/nl_colorPrimary</item>
+        <item name="colorPrimaryDark">@color/nl_colorPrimaryDark</item>
+        <item name="colorAccent">@color/nl_colorAccent</item>
+    </style>
+</resources>
