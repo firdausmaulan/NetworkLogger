@@ -8,7 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="20dp"
-        android:text="Volley Logger" />
+        android:text="@string/nl_title_list" />
 
     <View
         android:layout_width="match_parent"

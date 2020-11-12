@@ -1,6 +1,6 @@
 package com.network.logger.list;
 
-import android.os.AsyncTask;
+import android.app.Activity;
 
 import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
@@ -9,10 +9,12 @@ import java.util.List;
 
 public class NetworkLoggerPresenter {
 
+    private Activity context;
     private NetworkLoggerView view;
     private AppDatabase database;
 
-    NetworkLoggerPresenter(NetworkLoggerView view, AppDatabase database) {
+    NetworkLoggerPresenter(Activity context, NetworkLoggerView view, AppDatabase database) {
+        this.context = context;
         this.view = view;
         this.database = database;
     }
@@ -21,41 +23,53 @@ public class NetworkLoggerPresenter {
         view = null;
     }
 
-    void getListData(int currentPosition) {
-        new GetAllTask().execute(currentPosition);
+    void getListData() {
+        if (view != null) view.showLoading();
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                final List<NetworkLoggerModel> list = database.networkLoggerDao().getAll();
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view != null) {
+                            view.showData(list);
+                            view.hideLoading();
+                        }
+                    }
+                });
+            }
+        }.start();
     }
 
-    private class GetAllTask extends AsyncTask<Integer, Void, List<NetworkLoggerModel>> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            view.showLoading();
-        }
-
-        @Override
-        protected List<NetworkLoggerModel> doInBackground(Integer... integers) {
-            return database.networkLoggerDao().getAll();
-        }
-
-        @Override
-        protected void onPostExecute(List<NetworkLoggerModel> list) {
-            super.onPostExecute(list);
-            if (view != null){
-                view.showData(list);
-                view.hideLoading();
+    void getSearchData(final String query) {
+        if (view != null) view.showLoading();
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                final List<NetworkLoggerModel> list = database.networkLoggerDao().getSearch("%" + query + "%");
+                context.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (view != null) {
+                            view.showData(list);
+                            view.hideLoading();
+                        }
+                    }
+                });
             }
-        }
+        }.start();
     }
 
     void deleteAllData() {
-        new DeleteAllTask().execute();
-    }
-
-    private class DeleteAllTask extends AsyncTask<Void, Void, Void> {
-        @Override
-        protected Void doInBackground(Void... voids) {
-            database.networkLoggerDao().deleteAll();
-            return null;
-        }
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                database.networkLoggerDao().deleteAll();
+            }
+        }.start();
     }
 }

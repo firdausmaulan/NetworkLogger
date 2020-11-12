@@ -3,10 +3,11 @@ package com.network.logger.detail;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.network.logger.R;
 import com.network.logger.database.AppDatabase;
@@ -15,7 +16,6 @@ import com.network.logger.util.Constant;
 public class NetworkLoggerDetailActivity extends AppCompatActivity implements NetworkLoggerDetailView {
 
     private NetworkLoggerDetailPresenter presenter;
-    private int uid;
 
     private TextView tvData;
     private ImageView ivBack;
@@ -28,12 +28,12 @@ public class NetworkLoggerDetailActivity extends AppCompatActivity implements Ne
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_network_logger_detail);
 
-        uid = getIntent().getIntExtra(Constant.UID, 0);
+        int uid = getIntent().getIntExtra(Constant.UID, 0);
 
         setView();
         setAction();
 
-        presenter = new NetworkLoggerDetailPresenter(this, AppDatabase.getAppDatabase());
+        presenter = new NetworkLoggerDetailPresenter(this, this, AppDatabase.getAppDatabase());
         presenter.getData(uid);
     }
 

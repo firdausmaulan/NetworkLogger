@@ -8,8 +8,7 @@ public class JsonPretty {
     public String print(String data) {
         try {
             Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            JsonParser jp = new JsonParser();
-            return gson.toJson(jp.parse(data));
+            return gson.toJson(JsonParser.parseString(data));
         } catch (Exception e) {
             e.printStackTrace();
         }

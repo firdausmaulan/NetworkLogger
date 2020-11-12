@@ -5,10 +5,10 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Build;
-import android.support.v4.app.NotificationCompat;
-import android.support.v4.app.NotificationManagerCompat;
+
+import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
@@ -19,25 +19,18 @@ public class NetworkLogger {
     private Context context = NetworkLoggerApp.get();
     private AppDatabase database = AppDatabase.getAppDatabase();
 
-    public void add(NetworkLoggerModel model) {
-        new InsertTask().execute(model);
+    public void add(final NetworkLoggerModel model) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                database.networkLoggerDao().insert(model);
+                showNotification();
+            }
+        }.start();
     }
 
-    private class InsertTask extends AsyncTask<NetworkLoggerModel, NetworkLoggerModel, NetworkLoggerModel> {
-        @Override
-        protected NetworkLoggerModel doInBackground(NetworkLoggerModel... networkLoggerModels) {
-            database.networkLoggerDao().insert(networkLoggerModels[0]);
-            return networkLoggerModels[0];
-        }
-
-        @Override
-        protected void onPostExecute(NetworkLoggerModel model) {
-            super.onPostExecute(model);
-            showNotification(model);
-        }
-    }
-
-    private void showNotification(NetworkLoggerModel model) {
+    private void showNotification() {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, NetworkLoggerListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);

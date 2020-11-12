@@ -1,12 +1,15 @@
 package com.network.logger.list;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.widget.SwipeRefreshLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.ImageView;
+
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
 import com.network.logger.R;
 import com.network.logger.database.AppDatabase;
@@ -23,7 +26,7 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
     private SwipeRefreshLayout refreshLayout;
     private ImageView ivBack;
     private ImageView ivDelete;
-    private RecyclerView rvVolleyLogger;
+    private ImageView ivSearch;
     private NetworkLoggerAdapter networkLoggerAdapter;
 
     @Override
@@ -34,15 +37,16 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
         setView();
         setAction();
 
-        presenter = new NetworkLoggerPresenter(this, AppDatabase.getAppDatabase());
-        presenter.getListData(0);
+        presenter = new NetworkLoggerPresenter(this, this, AppDatabase.getAppDatabase());
+        presenter.getListData();
     }
 
     private void setView() {
         refreshLayout = findViewById(R.id.refreshLayout);
         ivBack = findViewById(R.id.ivBack);
         ivDelete = findViewById(R.id.ivDelete);
-        rvVolleyLogger = findViewById(R.id.rvVolleyLogger);
+        ivSearch = findViewById(R.id.ivSearch);
+        RecyclerView rvVolleyLogger = findViewById(R.id.rvVolleyLogger);
 
         networkLoggerAdapter = new NetworkLoggerAdapter(this);
         rvVolleyLogger.setAdapter(networkLoggerAdapter);
@@ -53,7 +57,7 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
             @Override
             public void onRefresh() {
                 networkLoggerAdapter.clear();
-                presenter.getListData(0);
+                presenter.getListData();
             }
         });
 
@@ -67,8 +71,15 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
         ivDelete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                networkLoggerAdapter.clear();
-                presenter.deleteAllData();
+                showDeleteDialog();
+            }
+        });
+
+        ivSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(NetworkLoggerListActivity.this, NetworkLoggerListSearchActivity.class);
+                startActivity(intent);
             }
         });
 
@@ -80,6 +91,26 @@ public class NetworkLoggerListActivity extends AppCompatActivity implements Netw
                 startActivity(intent);
             }
         });
+    }
+
+    private void showDeleteDialog() {
+        new AlertDialog.Builder(this)
+                .setTitle("Delete")
+                .setMessage("Are you sure want to delete?")
+                .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                })
+                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                        networkLoggerAdapter.clear();
+                        presenter.deleteAllData();
+                    }
+                }).create().show();
     }
 
     @Override

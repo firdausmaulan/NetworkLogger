@@ -8,6 +8,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/NetworkLoggerAppTheme" />
         <activity
+            android:name="com.network.logger.list.NetworkLoggerListSearchActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/NetworkLoggerAppTheme" />
+        <activity
             android:name="com.network.logger.list.NetworkLoggerListActivity"
             android:screenOrientation="portrait"
             android:theme="@style/NetworkLoggerAppTheme" />
