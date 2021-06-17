@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,6 +21,7 @@ public class NetworkLoggerDetailActivity extends AppCompatActivity implements Ne
     private TextView tvData;
     private ImageView ivBack;
     private ImageView ivShare;
+    private ProgressBar progressBar;
 
     private String mData = "";
 
@@ -41,6 +43,7 @@ public class NetworkLoggerDetailActivity extends AppCompatActivity implements Ne
         tvData = findViewById(R.id.tvData);
         ivBack = findViewById(R.id.ivBack);
         ivShare = findViewById(R.id.ivShare);
+        progressBar = findViewById(R.id.progressBar);
     }
 
     private void setAction() {
@@ -54,6 +57,8 @@ public class NetworkLoggerDetailActivity extends AppCompatActivity implements Ne
         ivShare.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ivShare.setVisibility(View.GONE);
+                progressBar.setVisibility(View.VISIBLE);
                 Intent sendIntent = new Intent();
                 sendIntent.setAction(Intent.ACTION_SEND);
                 sendIntent.putExtra(Intent.EXTRA_TEXT, mData);
@@ -68,6 +73,15 @@ public class NetworkLoggerDetailActivity extends AppCompatActivity implements Ne
     public void showData(String data) {
         mData = data;
         tvData.setText(mData);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (ivShare != null && progressBar != null){
+            ivShare.setVisibility(View.VISIBLE);
+            progressBar.setVisibility(View.GONE);
+        }
     }
 
     @Override

@@ -39,6 +39,7 @@ public class NetworkLoggerPresenter {
                         }
                     }
                 });
+                if (list != null && list.size() > 0) deleteSomeData(list);
             }
         }.start();
     }
@@ -59,6 +60,22 @@ public class NetworkLoggerPresenter {
                         }
                     }
                 });
+            }
+        }.start();
+    }
+
+    void deleteSomeData(final List<NetworkLoggerModel> list) {
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                if (list.size() >= 100) {
+                    int uid = list.get(0).getUid();
+                    uid = uid - 1000;
+                    if (uid > 0){
+                        database.networkLoggerDao().deleteSomeData(uid);
+                    }
+                }
             }
         }.start();
     }
