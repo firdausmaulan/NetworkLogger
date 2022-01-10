@@ -14,20 +14,21 @@ import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
 import com.network.logger.list.NetworkLoggerListActivity;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 public class NetworkLogger {
 
-    private Context context = NetworkLoggerApp.get();
-    private AppDatabase database = AppDatabase.getAppDatabase();
+    private final Context context = NetworkLoggerApp.get();
+    private final AppDatabase database = AppDatabase.getAppDatabase();
+    private final int threadCt = Runtime.getRuntime().availableProcessors() + 1;
+    private final ExecutorService executor = Executors.newFixedThreadPool(threadCt);
 
     public void add(final NetworkLoggerModel model) {
-        new Thread() {
-            @Override
-            public void run() {
-                super.run();
-                database.networkLoggerDao().insert(model);
-                showNotification();
-            }
-        }.start();
+        executor.execute(() -> {
+            database.networkLoggerDao().insert(model);
+            showNotification();
+        });
     }
 
     private void showNotification() {

@@ -2,7 +2,6 @@ package com.network.logger.list;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
@@ -48,28 +47,17 @@ public class NetworkLoggerListSearchActivity extends AppCompatActivity implement
     }
 
     private void setAction() {
-        ivBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                finish();
-            }
-        });
+        ivBack.setOnClickListener(view -> finish());
 
-        etSearch.addTextChangedListener(editTextDelay.setListener(new EditTextDelay.Listener() {
-            @Override
-            public void onTextChanged(String data) {
-                networkLoggerAdapter.clear();
-                if (data != null && !data.isEmpty()) presenter.getSearchData(data);
-            }
+        etSearch.addTextChangedListener(editTextDelay.setListener(data -> {
+            networkLoggerAdapter.clear();
+            if (data != null && !data.isEmpty()) presenter.getSearchData(data);
         }));
 
-        networkLoggerAdapter.setClickListener(new NetworkLoggerAdapter.ItemClickListener() {
-            @Override
-            public void onItemClick(View view, NetworkLoggerModel model) {
-                Intent intent = new Intent(NetworkLoggerListSearchActivity.this, NetworkLoggerDetailActivity.class);
-                intent.putExtra(Constant.UID, model.getUid());
-                startActivity(intent);
-            }
+        networkLoggerAdapter.setClickListener((view, model) -> {
+            Intent intent = new Intent(this, NetworkLoggerDetailActivity.class);
+            intent.putExtra(Constant.UID, model.getUid());
+            startActivity(intent);
         });
     }
 

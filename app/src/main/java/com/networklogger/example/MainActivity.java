@@ -22,10 +22,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void test() {
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
+            for (int i=0; i<100; i++){
                 String statusCode = "200";
                 if (counter % 4 == 0){
                     statusCode = "400";
@@ -38,7 +37,7 @@ public class MainActivity extends AppCompatActivity {
                 model = new NetworkLoggerModel();
                 model.setMethod("GET");
                 model.setStatusCode(statusCode);
-                model.setEventName("test " + counter++);
+                model.setEventName("test " + i + "-" + counter++);
                 model.setUrl("https://www.test.com/");
                 model.setHeader("Authorization Bearer abcde12345");
                 model.setParams("{\n" +
@@ -54,9 +53,9 @@ public class MainActivity extends AppCompatActivity {
                         "    \"Age\":20\n" +
                         "}");
                 networkLogger.add(model);
-
-                test();
             }
+
+            test();
         }, 5 * 1000);
     }
 }

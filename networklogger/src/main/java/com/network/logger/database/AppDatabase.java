@@ -19,7 +19,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getAppDatabase() {
         if (INSTANCE == null) {
             Context context = NetworkLoggerApp.get();
-            String dbName = context.getString(R.string.app_name).trim().toLowerCase() + "db";
+            String dbName = context.getString(R.string.app_name).trim().toLowerCase().replace(" ", "_") + "_nl_db";
             INSTANCE = Room.databaseBuilder(context, AppDatabase.class, dbName).build();
         }
         return INSTANCE;
