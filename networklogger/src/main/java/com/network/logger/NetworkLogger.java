@@ -14,9 +14,6 @@ import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
 import com.network.logger.list.NetworkLoggerListActivity;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class NetworkLogger {
 
     private final Context context = NetworkLoggerApp.get();
