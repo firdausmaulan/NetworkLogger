@@ -22,41 +22,38 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void test() {
-        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
+        new Handler(Looper.getMainLooper()).postDelayed(() -> {
 
-                String statusCode = "200";
-                if (counter % 4 == 0){
-                    statusCode = "400";
-                } else if (counter % 5 == 0){
-                    statusCode = "500";
-                }
-
-                NetworkLogger networkLogger = new NetworkLogger();
-                NetworkLoggerModel model;
-                model = new NetworkLoggerModel();
-                model.setMethod("GET");
-                model.setStatusCode(statusCode);
-                model.setEventName("test " + counter++);
-                model.setUrl("https://www.test.com/");
-                model.setHeader("Authorization Bearer abcde12345");
-                model.setParams("{\n" +
-                        "    \"name\":\"Test\",\n" +
-                        "    \"Age\":20\n" +
-                        "}");
-                model.setInfo("{\n" +
-                        "    \"name\":\"Test\",\n" +
-                        "    \"Age\":20\n" +
-                        "}");
-                model.setResponse("{\n" +
-                        "    \"name\":\"Test\",\n" +
-                        "    \"Age\":20\n" +
-                        "}");
-                networkLogger.add(model);
-
-                test();
+            String statusCode = "200";
+            if (counter % 4 == 0) {
+                statusCode = "400";
+            } else if (counter % 5 == 0) {
+                statusCode = "500";
             }
+
+            NetworkLogger networkLogger = new NetworkLogger();
+            NetworkLoggerModel model;
+            model = new NetworkLoggerModel();
+            model.setMethod("GET");
+            model.setStatusCode(statusCode);
+            model.setEventName("test " + counter++);
+            model.setUrl("https://www.test.com/");
+            model.setHeader("Authorization Bearer abcde12345");
+            model.setParams("{\n" +
+                    "    \"name\":\"Test\",\n" +
+                    "    \"Age\":20\n" +
+                    "}");
+            model.setInfo("{\n" +
+                    "    \"name\":\"Test\",\n" +
+                    "    \"Age\":20\n" +
+                    "}");
+            model.setResponse("{\n" +
+                    "    \"name\":\"Test\",\n" +
+                    "    \"Age\":20\n" +
+                    "}");
+            networkLogger.add(model, "sandbox");
+
+            test();
         }, 5 * 1000);
     }
 }

@@ -32,7 +32,7 @@
             android:src="@drawable/ic_nl_share" />
 
         <ProgressBar
-            android:id="@+id/progressBar"
+            android:id="@+id/progressBarShare"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_alignParentEnd="true"
@@ -51,6 +51,17 @@
             android:textColor="@android:color/white"
             android:textSize="18sp"
             tools:ignore="RelativeOverlap" />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/progressBar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true" />
     </RelativeLayout>
 
     <ScrollView

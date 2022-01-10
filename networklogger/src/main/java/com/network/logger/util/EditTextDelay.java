@@ -47,13 +47,8 @@ public class EditTextDelay implements TextWatcher {
                     @Override
                     public void run() {
                         if (context == null) return;
-                        context.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                listener.onTextChanged(editable.toString().trim());
-                            }
-                        });
+                        context.runOnUiThread(() -> listener.onTextChanged(editable.toString().trim()));
                     }
-                }, 2000);
+                }, 1000);
     }
 }

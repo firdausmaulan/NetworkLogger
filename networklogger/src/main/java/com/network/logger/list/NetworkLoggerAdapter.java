@@ -19,9 +19,9 @@ import java.util.List;
 
 public class NetworkLoggerAdapter extends RecyclerView.Adapter<NetworkLoggerAdapter.ViewHolder> {
 
-    private Context mContext;
-    private List<NetworkLoggerModel> mData = new ArrayList<>();
-    private LayoutInflater mInflater;
+    private final Context mContext;
+    private final List<NetworkLoggerModel> mData = new ArrayList<>();
+    private final LayoutInflater mInflater;
     private ItemClickListener mClickListener;
 
     // data is passed into the constructor
@@ -83,7 +83,7 @@ public class NetworkLoggerAdapter extends RecyclerView.Adapter<NetworkLoggerAdap
         @Override
         public void onClick(View view) {
             if (mClickListener != null) {
-                mClickListener.onItemClick(view, mData.get(getAdapterPosition()));
+                mClickListener.onItemClick(view, mData.get(getAbsoluteAdapterPosition()));
             }
         }
     }
