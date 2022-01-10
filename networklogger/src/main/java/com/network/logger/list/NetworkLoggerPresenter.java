@@ -6,8 +6,6 @@ import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
 
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class NetworkLoggerPresenter {
 

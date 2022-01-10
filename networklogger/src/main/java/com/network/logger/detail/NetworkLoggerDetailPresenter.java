@@ -6,9 +6,6 @@ import com.network.logger.database.AppDatabase;
 import com.network.logger.database.NetworkLoggerModel;
 import com.network.logger.util.JsonPretty;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
 public class NetworkLoggerDetailPresenter {
 
     private final Activity context;

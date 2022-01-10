@@ -21,9 +21,6 @@ public interface NetworkLoggerDao {
     @Query("SELECT * FROM t_log where uid=:uid")
     NetworkLoggerModel findById(int uid);
 
-    //@Query("SELECT * FROM t_log LIMIT 10 OFFSET :currentPosition")
-    //List<NetworkLoggerModel> getAll(int currentPosition);
-
     @Query("DELETE FROM t_log WHERE uid < :uid")
     void deleteSomeData(Integer uid);
 

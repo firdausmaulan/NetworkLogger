@@ -20,24 +20,28 @@ public class NetworkLogger {
     private final AppDatabase database = AppDatabase.getAppDatabase();
 
     public void add(final NetworkLoggerModel model) {
+        add(model, "");
+    }
+
+    public void add(final NetworkLoggerModel model, String environment) {
         // using plain thread memory consumption less than 32 MB
         // using executor always increase until out of memory
         // both use 20% CPU consumption for inserting 100 data
         new Thread(() -> {
             database.networkLoggerDao().insert(model);
-            showNotification();
+            showNotification(environment);
         }).start();
     }
 
-    private void showNotification() {
+    private void showNotification(String environment) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, NetworkLoggerListActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "network_logger")
                 .setSmallIcon(android.R.drawable.ic_menu_info_details)
-                .setContentTitle(context.getString(R.string.app_name))
-                .setContentText("Network Logger")
+                .setContentTitle(context.getString(R.string.app_name) )
+                .setContentText("Network Logger " + environment)
                 .setPriority(NotificationCompat.PRIORITY_DEFAULT)
                 .setContentIntent(pendingIntent);
 
