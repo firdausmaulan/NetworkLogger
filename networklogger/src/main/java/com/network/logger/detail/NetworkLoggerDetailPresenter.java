@@ -15,8 +15,6 @@ public class NetworkLoggerDetailPresenter {
     private NetworkLoggerDetailView view;
     private final AppDatabase database;
     private final JsonPretty jsonPretty = new JsonPretty();
-    private final int threadCt = Runtime.getRuntime().availableProcessors() + 1;
-    private final ExecutorService executor = Executors.newFixedThreadPool(threadCt);
 
     NetworkLoggerDetailPresenter(Activity context, NetworkLoggerDetailView view, AppDatabase database) {
         this.context = context;
@@ -29,7 +27,7 @@ public class NetworkLoggerDetailPresenter {
     }
 
     void getData(final int uid) {
-        executor.execute(() -> {
+        new Thread(() -> {
             NetworkLoggerModel model = database.networkLoggerDao().findById(uid);
             final String data = "Method : " + model.getMethod()
                     + "\n\nStatus Code : " + model.getStatusCode()
@@ -44,6 +42,6 @@ public class NetworkLoggerDetailPresenter {
             context.runOnUiThread(() -> {
                 if (view != null) view.showData(data);
             });
-        });
+        }).start();
     }
 }

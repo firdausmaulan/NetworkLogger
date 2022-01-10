@@ -21,14 +21,15 @@ public class NetworkLogger {
 
     private final Context context = NetworkLoggerApp.get();
     private final AppDatabase database = AppDatabase.getAppDatabase();
-    private final int threadCt = Runtime.getRuntime().availableProcessors() + 1;
-    private final ExecutorService executor = Executors.newFixedThreadPool(threadCt);
 
     public void add(final NetworkLoggerModel model) {
-        executor.execute(() -> {
+        // using plain thread memory consumption less than 32 MB
+        // using executor always increase until out of memory
+        // both use 20% CPU consumption for inserting 100 data
+        new Thread(() -> {
             database.networkLoggerDao().insert(model);
             showNotification();
-        });
+        }).start();
     }
 
     private void showNotification() {

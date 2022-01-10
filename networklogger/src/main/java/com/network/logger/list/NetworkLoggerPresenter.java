@@ -14,8 +14,6 @@ public class NetworkLoggerPresenter {
     private final Activity context;
     private NetworkLoggerView view;
     private final AppDatabase database;
-    private final int threadCt = Runtime.getRuntime().availableProcessors() + 1;
-    private final ExecutorService executor = Executors.newFixedThreadPool(threadCt);
 
     NetworkLoggerPresenter(Activity context, NetworkLoggerView view, AppDatabase database) {
         this.context = context;
@@ -29,7 +27,7 @@ public class NetworkLoggerPresenter {
 
     void getListData() {
         if (view != null) view.showLoading();
-        executor.execute(() -> {
+        new Thread(() -> {
             final List<NetworkLoggerModel> list = database.networkLoggerDao().getAll();
             context.runOnUiThread(() -> {
                 if (view != null) {
@@ -38,12 +36,12 @@ public class NetworkLoggerPresenter {
                 }
             });
             if (list != null && list.size() > 0) deleteSomeData(list);
-        });
+        }).start();
     }
 
     void getSearchData(final String query) {
         if (view != null) view.showLoading();
-        executor.execute(() -> {
+        new Thread(() -> {
             String formattedQuery = "%" + query + "%";
             final List<NetworkLoggerModel> list = database.networkLoggerDao().getSearch(formattedQuery);
             context.runOnUiThread(() -> {
@@ -52,22 +50,22 @@ public class NetworkLoggerPresenter {
                     view.hideLoading();
                 }
             });
-        });
+        }).start();
     }
 
     void deleteSomeData(final List<NetworkLoggerModel> list) {
-        executor.execute(() -> {
-            if (list.size() >= 10) { // 100
+        new Thread(() -> {
+            if (list.size() >= 100) { // 100
                 int uid = list.get(0).getUid();
-                uid = uid - 100; // 1000
+                uid = uid - 1000; // 1000
                 if (uid > 0){
                     database.networkLoggerDao().deleteSomeData(uid);
                 }
             }
-        });
+        }).start();
     }
 
     void deleteAllData() {
-        executor.execute(() -> database.networkLoggerDao().deleteAll());
+        new Thread(() -> database.networkLoggerDao().deleteAll()).start();
     }
 }
