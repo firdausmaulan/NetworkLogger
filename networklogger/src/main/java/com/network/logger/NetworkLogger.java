@@ -1,5 +1,6 @@
 package com.network.logger;
 
+import android.annotation.SuppressLint;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,10 +34,16 @@ public class NetworkLogger {
         }).start();
     }
 
+    @SuppressLint("UnspecifiedImmutableFlag")
     private void showNotification(String environment) {
         // Create an explicit intent for an Activity in your app
         Intent intent = new Intent(context, NetworkLoggerListActivity.class);
-        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
+        PendingIntent pendingIntent;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        } else {
+            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        }
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "network_logger")
                 .setSmallIcon(android.R.drawable.ic_menu_info_details)
