@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import com.network.logger.NetworkLoggerApp;
 import com.network.logger.R;
 
-@Database(entities = {NetworkLoggerModel.class}, version = 1)
+@Database(entities = {NetworkLoggerModel.class}, version = 2)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -20,7 +20,10 @@ public abstract class AppDatabase extends RoomDatabase {
         if (INSTANCE == null) {
             Context context = NetworkLoggerApp.get();
             String dbName = context.getString(R.string.app_name).trim().toLowerCase().replace(" ", "_") + "_nl_db";
-            INSTANCE = Room.databaseBuilder(context, AppDatabase.class, dbName).build();
+            INSTANCE = Room.databaseBuilder(context, AppDatabase.class, dbName)
+                    .addMigrations(DatabaseMigration.INSTANCE.getMIGRATION_1_2())
+                    .fallbackToDestructiveMigration()
+                    .build();
         }
         return INSTANCE;
     }

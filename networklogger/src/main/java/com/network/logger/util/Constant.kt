@@ -1,5 +1,5 @@
-package com.network.logger.util;
+package com.network.logger.util
 
-public class Constant {
-    public static final String UID = "uid";
+object Constant {
+    const val UID: String = "uid"
 }

@@ -4,6 +4,7 @@ package com.networklogger.example;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,6 +19,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        new PermissionHelper().requestPermissionNotification(this);
         test();
     }
 
@@ -52,7 +54,6 @@ public class MainActivity extends AppCompatActivity {
                     "    \"Age\":20\n" +
                     "}");
             networkLogger.add(model, "sandbox");
-
             test();
         }, 5 * 1000);
     }

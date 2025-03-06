@@ -1,5 +1,5 @@
-package com.network.logger.detail;
+package com.network.logger.detail
 
-public interface NetworkLoggerDetailView {
-    void showData(String data);
+interface NetworkLoggerDetailView {
+    fun showData(data: String?)
 }

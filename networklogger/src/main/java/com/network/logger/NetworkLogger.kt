@@ -1,74 +1,90 @@
-package com.network.logger;
+package com.network.logger
 
-import android.annotation.SuppressLint;
-import android.app.NotificationChannel;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.content.Context;
-import android.content.Intent;
-import android.os.Build;
+import android.Manifest
+import android.annotation.SuppressLint
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.app.PendingIntent
+import android.content.Context
+import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
+import androidx.core.app.NotificationManagerCompat
+import com.network.logger.database.AppDatabase
+import com.network.logger.database.NetworkLoggerModel
+import com.network.logger.list.NetworkLoggerListActivity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
-import androidx.core.app.NotificationCompat;
-import androidx.core.app.NotificationManagerCompat;
+class NetworkLogger {
+    private val context: Context = NetworkLoggerApp.get()
+    private var database : AppDatabase? = AppDatabase.getAppDatabase()
+    private val scope = CoroutineScope(Dispatchers.Main.immediate)
 
-import com.network.logger.database.AppDatabase;
-import com.network.logger.database.NetworkLoggerModel;
-import com.network.logger.list.NetworkLoggerListActivity;
-
-public class NetworkLogger {
-
-    private final Context context = NetworkLoggerApp.get();
-    private final AppDatabase database = AppDatabase.getAppDatabase();
-
-    public void add(final NetworkLoggerModel model) {
-        add(model, "");
+    fun add(model: NetworkLoggerModel?, environment: String = "") {
+        scope.launch {
+            withContext(Dispatchers.IO) {
+                if (model != null) database?.networkLoggerDao()?.insert(model)
+            }
+            showNotification(environment)
+        }
     }
 
-    public void add(final NetworkLoggerModel model, String environment) {
-        // using plain thread memory consumption less than 32 MB
-        // using executor always increase until out of memory
-        // both use 20% CPU consumption for inserting 100 data
-        new Thread(() -> {
-            database.networkLoggerDao().insert(model);
-            showNotification(environment);
-        }).start();
+    fun cleanup() {
+        // Cancel the scope when the NetworkLogger is no longer needed
+        scope.cancel()
     }
 
     @SuppressLint("UnspecifiedImmutableFlag")
-    private void showNotification(String environment) {
+    private fun showNotification(environment: String) {
         // Create an explicit intent for an Activity in your app
-        Intent intent = new Intent(context, NetworkLoggerListActivity.class);
-        PendingIntent pendingIntent;
-        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
-            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE);
+        val intent = Intent(context, NetworkLoggerListActivity::class.java)
+        val pendingIntent = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_MUTABLE)
         } else {
-            pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
 
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, "network_logger")
-                .setSmallIcon(android.R.drawable.ic_menu_info_details)
-                .setContentTitle(context.getString(R.string.app_name) )
-                .setContentText("Network Logger " + environment)
-                .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-                .setContentIntent(pendingIntent);
+        val builder = NotificationCompat.Builder(context, "network_logger")
+            .setSmallIcon(android.R.drawable.ic_menu_info_details)
+            .setContentTitle(context.getString(R.string.app_name))
+            .setContentText("Network Logger $environment")
+            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
+            .setContentIntent(pendingIntent)
 
         // Create the NotificationChannel, but only on API 26+ because
         // the NotificationChannel class is new and not in the support library
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            CharSequence name = "network_logger";
-            String description = "network_logger";
-            int importance = NotificationManager.IMPORTANCE_DEFAULT;
-            NotificationChannel channel = new NotificationChannel("network_logger", name, importance);
-            channel.setDescription(description);
+            val name: CharSequence = "network_logger"
+            val description = "network_logger"
+            val importance = NotificationManager.IMPORTANCE_DEFAULT
+            val channel = NotificationChannel("network_logger", name, importance)
+            channel.description = description
             // Register the channel with the system; you can't change the importance
             // or other notification behaviors after this
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            val notificationManager = context.getSystemService(
+                NotificationManager::class.java
+            )
+            notificationManager.createNotificationChannel(channel)
         }
 
-        NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
+        val notificationManager = NotificationManagerCompat.from(context)
 
         // notificationId is a unique int for each notification that you must define
-        notificationManager.notify(0, builder.build());
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return
+        }
+        notificationManager.notify(0, builder.build())
     }
 }

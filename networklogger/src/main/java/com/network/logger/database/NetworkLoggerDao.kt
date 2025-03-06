@@ -1,29 +1,27 @@
-package com.network.logger.database;
+package com.network.logger.database
 
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.Query
 
-import androidx.room.Dao;
-import androidx.room.Insert;
-import androidx.room.Query;
-
-import java.util.List;
 
 @Dao
-public interface NetworkLoggerDao {
+interface NetworkLoggerDao {
     @Insert
-    void insert(NetworkLoggerModel networkLoggerModel);
+    suspend fun insert(networkLoggerModel: NetworkLoggerModel)
 
     @Query("SELECT * FROM t_log ORDER BY uid DESC LIMIT 100")
-    List<NetworkLoggerModel> getAll();
+    suspend fun getAll() : List<NetworkLoggerModel?>
 
-    @Query("SELECT * FROM t_log WHERE event_name LIKE :query ORDER BY uid DESC LIMIT 10")
-    List<NetworkLoggerModel> getSearch(String query);
+    @Query("SELECT * FROM t_log WHERE event_name LIKE :query ORDER BY uid DESC LIMIT 100")
+    suspend fun getSearch(query: String?): List<NetworkLoggerModel?>
 
     @Query("SELECT * FROM t_log where uid=:uid")
-    NetworkLoggerModel findById(int uid);
+    suspend fun findById(uid: Int): NetworkLoggerModel
 
-    @Query("DELETE FROM t_log WHERE uid < :uid")
-    void deleteSomeData(Integer uid);
+    @Query("DELETE FROM t_log WHERE created_at < :expiredTime")
+    suspend fun deleteSomeData(expiredTime: Long?)
 
     @Query("DELETE FROM t_log")
-    void deleteAll();
+    suspend fun deleteAll()
 }

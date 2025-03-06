@@ -1,110 +1,92 @@
-package com.network.logger.list;
+package com.network.logger.list
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.ImageView;
+import android.content.DialogInterface
+import android.content.Intent
+import android.os.Bundle
+import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import com.network.logger.database.AppDatabase
+import com.network.logger.database.NetworkLoggerModel
+import com.network.logger.databinding.ActivityNetworkLoggerListBinding
+import com.network.logger.detail.NetworkLoggerDetailActivity
+import com.network.logger.util.Constant
+import kotlinx.coroutines.launch
 
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
+class NetworkLoggerListActivity : AppCompatActivity(), NetworkLoggerView {
+    
+    private var binding: ActivityNetworkLoggerListBinding? = null
+    private var presenter: NetworkLoggerPresenter? = null
+    private var networkLoggerAdapter: NetworkLoggerAdapter? = null
 
-import com.network.logger.R;
-import com.network.logger.database.AppDatabase;
-import com.network.logger.database.NetworkLoggerModel;
-import com.network.logger.detail.NetworkLoggerDetailActivity;
-import com.network.logger.util.Constant;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityNetworkLoggerListBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
 
-import java.util.List;
+        setView()
+        setAction()
 
-public class NetworkLoggerListActivity extends AppCompatActivity implements NetworkLoggerView {
-
-    private NetworkLoggerPresenter presenter;
-
-    private SwipeRefreshLayout refreshLayout;
-    private ImageView ivBack;
-    private ImageView ivDelete;
-    private ImageView ivSearch;
-    private NetworkLoggerAdapter networkLoggerAdapter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_network_logger_list);
-
-        setView();
-        setAction();
-
-        presenter = new NetworkLoggerPresenter(this, this, AppDatabase.getAppDatabase());
-        presenter.getListData();
+        presenter = NetworkLoggerPresenter(this, AppDatabase.getAppDatabase())
+        lifecycleScope.launch { presenter?.getListData() }
     }
 
-    private void setView() {
-        refreshLayout = findViewById(R.id.refreshLayout);
-        ivBack = findViewById(R.id.ivBack);
-        ivDelete = findViewById(R.id.ivDelete);
-        ivSearch = findViewById(R.id.ivSearch);
-        RecyclerView rvVolleyLogger = findViewById(R.id.rvVolleyLogger);
-
-        networkLoggerAdapter = new NetworkLoggerAdapter(this);
-        rvVolleyLogger.setAdapter(networkLoggerAdapter);
+    private fun setView() {
+        networkLoggerAdapter = NetworkLoggerAdapter(this)
+        binding?.rvVolleyLogger?.adapter = networkLoggerAdapter
     }
 
-    private void setAction() {
-        refreshLayout.setOnRefreshListener(() -> {
-            networkLoggerAdapter.clear();
-            presenter.getListData();
-        });
+    private fun setAction() {
+        binding?.refreshLayout?.setOnRefreshListener {
+            networkLoggerAdapter?.clear()
+            lifecycleScope.launch { presenter?.getListData() }
+        }
 
-        ivBack.setOnClickListener(view -> finish());
+        binding?.ivBack?.setOnClickListener { finish() }
 
-        ivDelete.setOnClickListener(view -> showDeleteDialog());
+        binding?.ivDelete?.setOnClickListener { showDeleteDialog() }
 
-        ivSearch.setOnClickListener(view -> {
-            Intent intent = new Intent(this, NetworkLoggerListSearchActivity.class);
-            startActivity(intent);
-        });
+        binding?.ivSearch?.setOnClickListener {
+            val intent =
+                Intent(this, NetworkLoggerListSearchActivity::class.java)
+            startActivity(intent)
+        }
 
-        networkLoggerAdapter.setClickListener((view, model) -> {
-            Intent intent = new Intent(this, NetworkLoggerDetailActivity.class);
-            intent.putExtra(Constant.UID, model.getUid());
-            startActivity(intent);
-        });
+        networkLoggerAdapter?.setClickListener { _, model ->
+            val intent = Intent(this@NetworkLoggerListActivity, NetworkLoggerDetailActivity::class.java)
+            intent.putExtra(Constant.UID, model?.uid)
+            startActivity(intent)
+        }
     }
 
-    private void showDeleteDialog() {
-        new AlertDialog.Builder(this)
-                .setTitle("Delete")
-                .setMessage("Are you sure want to delete?")
-                .setNegativeButton("Cancel", (dialogInterface, i) -> {
-                    // dismiss dialog
-                    dialogInterface.dismiss();
-                }).setPositiveButton("Yes", (dialogInterface, i) -> {
-                    dialogInterface.dismiss();
-                    networkLoggerAdapter.clear();
-                    presenter.deleteAllData();
-                }
-        ).create().show();
+    private fun showDeleteDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("Delete")
+            .setMessage("Are you sure want to delete?")
+            .setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
+                // dismiss dialog
+                dialogInterface.dismiss()
+            }.setPositiveButton("Yes") { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+                networkLoggerAdapter?.clear()
+                lifecycleScope.launch { presenter?.deleteAllData() }
+            }.create().show()
     }
 
-    @Override
-    public void showLoading() {
-        refreshLayout.setRefreshing(true);
+    override fun showLoading() {
+        binding?.refreshLayout?.isRefreshing = true
     }
 
-    @Override
-    public void hideLoading() {
-        refreshLayout.setRefreshing(false);
+    override fun hideLoading() {
+        binding?.refreshLayout?.isRefreshing = false
     }
 
-    @Override
-    public void showData(List<NetworkLoggerModel> list) {
-        networkLoggerAdapter.addList(list);
+    override fun showData(list: List<NetworkLoggerModel?>?) {
+        networkLoggerAdapter?.addList(list)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.unBind();
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.unBind()
     }
 }

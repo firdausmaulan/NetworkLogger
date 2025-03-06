@@ -1,17 +1,16 @@
-package com.network.logger.util;
+package com.network.logger.util
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonParser;
+import com.google.gson.GsonBuilder
+import com.google.gson.JsonParser
 
-public class JsonPretty {
-    public String print(String data) {
+class JsonPretty {
+    fun print(data: String?): String? {
         try {
-            Gson gson = new GsonBuilder().setPrettyPrinting().create();
-            return gson.toJson(JsonParser.parseString(data));
-        } catch (Exception e) {
-            e.printStackTrace();
+            val gson = GsonBuilder().setPrettyPrinting().create()
+            return gson.toJson(JsonParser.parseString(data))
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return data;
+        return data
     }
 }

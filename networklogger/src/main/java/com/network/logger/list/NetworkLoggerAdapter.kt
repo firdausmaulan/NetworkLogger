@@ -1,116 +1,97 @@
-package com.network.logger.list;
+package com.network.logger.list
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
+import android.annotation.SuppressLint
+import android.content.Context
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
+import android.widget.TextView
+import androidx.core.content.ContextCompat
+import androidx.recyclerview.widget.RecyclerView
+import com.network.logger.R
+import com.network.logger.database.NetworkLoggerModel
 
-import androidx.annotation.NonNull;
-import androidx.core.content.ContextCompat;
-import androidx.recyclerview.widget.RecyclerView;
+class NetworkLoggerAdapter(private val mContext: Context) :
+    RecyclerView.Adapter<NetworkLoggerAdapter.ViewHolder>() {
+    private val mData: MutableList<NetworkLoggerModel> = ArrayList()
+    private val mInflater: LayoutInflater = LayoutInflater.from(mContext)
+    private var mClickListener: ItemClickListener? = null
 
-import com.network.logger.R;
-import com.network.logger.database.NetworkLoggerModel;
-
-import java.util.ArrayList;
-import java.util.List;
-
-public class NetworkLoggerAdapter extends RecyclerView.Adapter<NetworkLoggerAdapter.ViewHolder> {
-
-    private final Context mContext;
-    private final List<NetworkLoggerModel> mData = new ArrayList<>();
-    private final LayoutInflater mInflater;
-    private ItemClickListener mClickListener;
-
-    // data is passed into the constructor
-    public NetworkLoggerAdapter(Context context) {
-        this.mContext = context;
-        this.mInflater = LayoutInflater.from(context);
-    }
-
-    public void addList(List<NetworkLoggerModel> list) {
-        if (list != null) {
-            for (int i = 0; i < list.size(); i++) {
-                mData.add(list.get(i));
-                notifyItemChanged(mData.size() - 1);
-            }
+    fun addList(list: List<NetworkLoggerModel?>?) {
+        if (list == null) return
+        for (i in list.indices) {
+            list[i]?.let { mData.add(it) }
+            notifyItemChanged(mData.size - 1)
         }
     }
 
-    public void clear() {
-        mData.clear();
-        notifyDataSetChanged();
+    fun clear() {
+        mData.clear()
+        notifyDataSetChanged()
     }
 
     // inflates the row layout from xml when needed
-    @NonNull
-    @Override
-    public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = mInflater.inflate(R.layout.adapter_network_logger, parent, false);
-        return new ViewHolder(view);
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        val view = mInflater.inflate(R.layout.adapter_network_logger, parent, false)
+        return ViewHolder(view)
     }
 
     // binds the data to the TextView in each row
     @SuppressLint("SetTextI18n")
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        NetworkLoggerModel model = mData.get(position);
-        holder.myTextView.setText(
-                model.getMethod() + " " + model.getStatusCode() + " " + model.getEventName()
-        );
-        holder.myTextView.setTextColor(ContextCompat.getColor(mContext, getColor(model.getStatusCode())));
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        val model = mData[position]
+        holder.myTextView.text = "${model.method} ${model.statusCode} ${model.eventName}"
+        holder.myTextView.setTextColor(ContextCompat.getColor(mContext, getColor(model.statusCode)))
     }
 
     // total number of rows
-    @Override
-    public int getItemCount() {
-        return mData.size();
+    override fun getItemCount(): Int {
+        return mData.size
     }
 
 
     // stores and recycles views as they are scrolled off screen
-    public class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
-        TextView myTextView;
+    inner class ViewHolder internal constructor(itemView: View) : RecyclerView.ViewHolder(itemView), View.OnClickListener {
+        var myTextView: TextView = itemView.findViewById(R.id.tvEventName)
 
-        ViewHolder(View itemView) {
-            super(itemView);
-            myTextView = itemView.findViewById(R.id.tvEventName);
-            itemView.setOnClickListener(this);
+        init {
+            itemView.setOnClickListener(this)
         }
 
-        @Override
-        public void onClick(View view) {
-            if (mClickListener != null) {
-                mClickListener.onItemClick(view, mData.get(getAbsoluteAdapterPosition()));
-            }
+        override fun onClick(view: View) {
+            mClickListener?.onItemClick(view, mData[absoluteAdapterPosition])
         }
     }
 
     // allows clicks events to be caught
-    public void setClickListener(ItemClickListener itemClickListener) {
-        this.mClickListener = itemClickListener;
+    fun setClickListener(itemClickListener: ItemClickListener?) {
+        this.mClickListener = itemClickListener
     }
 
     // parent activity will implement this method to respond to click events
-    public interface ItemClickListener {
-        void onItemClick(View view, NetworkLoggerModel model);
+    fun interface ItemClickListener {
+        fun onItemClick(view: View?, model: NetworkLoggerModel?)
     }
 
-    private int getColor(String statusCode) {
+    private fun getColor(statusCode: String?): Int {
         try {
-            int status = Integer.parseInt(statusCode);
-            if (status >= 200 && status < 300){
-                return android.R.color.holo_green_dark;
-            } else if (status >= 400 && status < 500){
-                return android.R.color.holo_orange_dark;
-            } else if (status >= 500 && status < 600){
-                return android.R.color.holo_red_dark;
+            var status = statusCode
+            if (status == null) status = "0"
+            val finalStatus = status.toInt()
+            when (finalStatus) {
+                in 200..299 -> {
+                    return android.R.color.holo_green_dark
+                }
+                in 400..499 -> {
+                    return android.R.color.holo_orange_dark
+                }
+                in 500..599 -> {
+                    return android.R.color.holo_red_dark
+                }
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
-        return android.R.color.darker_gray;
+        return android.R.color.darker_gray
     }
 }

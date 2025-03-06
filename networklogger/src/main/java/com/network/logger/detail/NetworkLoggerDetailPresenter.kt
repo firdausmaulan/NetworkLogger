@@ -1,44 +1,49 @@
-package com.network.logger.detail;
+package com.network.logger.detail
 
-import android.app.Activity;
+import com.network.logger.database.AppDatabase
+import com.network.logger.util.JsonPretty
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
-import com.network.logger.database.AppDatabase;
-import com.network.logger.database.NetworkLoggerModel;
-import com.network.logger.util.JsonPretty;
+class NetworkLoggerDetailPresenter internal constructor(
+    private var view: NetworkLoggerDetailView?,
+    private val database: AppDatabase?
+) {
+    private val jsonPretty = JsonPretty()
 
-public class NetworkLoggerDetailPresenter {
-
-    private final Activity context;
-    private NetworkLoggerDetailView view;
-    private final AppDatabase database;
-    private final JsonPretty jsonPretty = new JsonPretty();
-
-    NetworkLoggerDetailPresenter(Activity context, NetworkLoggerDetailView view, AppDatabase database) {
-        this.context = context;
-        this.view = view;
-        this.database = database;
+    fun unBind() {
+        view = null
     }
 
-    void unBind() {
-        view = null;
-    }
+    suspend fun getData(uid: Int) {
+        val model = withContext(Dispatchers.IO) {
+            database?.networkLoggerDao()?.findById(uid)
+        }
 
-    void getData(final int uid) {
-        new Thread(() -> {
-            NetworkLoggerModel model = database.networkLoggerDao().findById(uid);
-            final String data = "Method : " + model.getMethod()
-                    + "\n\nStatus Code : " + model.getStatusCode()
-                    + "\n\nEvent Name : " + model.getEventName()
-                    + "\n\nURL : " + model.getUrl()
-                    + "\n\nHeader : " + model.getHeader()
-                    + "\n\nParam : \n" + jsonPretty.print(model.getParams())
-                    + "\n\nInfo : \n" + jsonPretty.print(model.getInfo())
-                    + "\n\nResponse : \n" + jsonPretty.print(model.getResponse()
-                    + "\n\n"
-            );
-            context.runOnUiThread(() -> {
-                if (view != null) view.showData(data);
-            });
-        }).start();
+        if (model == null) {
+            withContext(Dispatchers.Main) {
+                // Handle the case where the model is null
+                view?.showData("Data not found for UID: $uid")
+            }
+            return
+        }
+
+        val data = withContext(Dispatchers.Default) {
+            val stringBuilder = StringBuilder()
+            stringBuilder.append("Method : " + model.method)
+            stringBuilder.append("\n\nStatus Code : " + model.statusCode)
+            stringBuilder.append("\n\nEvent Name : " + model.eventName)
+            stringBuilder.append("\n\nURL : " + model.url)
+            stringBuilder.append("\n\nHeader : " + model.header)
+            stringBuilder.append("\n\nParam : \n" + jsonPretty.print(model.params))
+            stringBuilder.append("\n\nInfo : \n" + jsonPretty.print(model.info))
+            stringBuilder.append("\n\nResponse : \n" + jsonPretty.print(model.response))
+            stringBuilder.append("\n\n")
+            stringBuilder.toString()
+        }
+
+        withContext(Dispatchers.Main) {
+            view?.showData(data)
+        }
     }
 }

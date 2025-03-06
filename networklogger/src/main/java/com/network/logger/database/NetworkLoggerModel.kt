@@ -1,100 +1,39 @@
-package com.network.logger.database;
+package com.network.logger.database
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 
-import androidx.room.ColumnInfo;
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
 
 @Entity(tableName = "t_log")
-public class NetworkLoggerModel {
+data class NetworkLoggerModel (
     @PrimaryKey(autoGenerate = true)
-    private int uid;
+    var uid: Int = 0,
+
     @ColumnInfo(name = "method")
-    private String method;
+    var method: String? = null,
+
     @ColumnInfo(name = "status_code")
-    private String statusCode;
+    var statusCode: String? = null,
+
     @ColumnInfo(name = "event_name")
-    private String eventName;
+    var eventName: String? = null,
+
     @ColumnInfo(name = "header")
-    private String header;
+    var header: String? = null,
+
     @ColumnInfo(name = "url")
-    private String url;
+    var url: String? = null,
+
     @ColumnInfo(name = "param")
-    private String params;
+    var params: String? = null,
+
     @ColumnInfo(name = "info")
-    private String info;
+    var info: String? = null,
+
     @ColumnInfo(name = "response")
-    private String response;
+    var response: String? = null,
 
-    public int getUid() {
-        return uid;
-    }
-
-    public void setUid(int uid) {
-        this.uid = uid;
-    }
-
-    public String getMethod() {
-        return method;
-    }
-
-    public void setMethod(String method) {
-        this.method = method;
-    }
-
-    public String getStatusCode() {
-        return statusCode;
-    }
-
-    public void setStatusCode(String statusCode) {
-        this.statusCode = statusCode;
-    }
-
-    public String getEventName() {
-        return eventName;
-    }
-
-    public void setEventName(String eventName) {
-        this.eventName = eventName;
-    }
-
-    public String getHeader() {
-        return header;
-    }
-
-    public void setHeader(String header) {
-        this.header = header;
-    }
-
-    public String getUrl() {
-        return url;
-    }
-
-    public void setUrl(String url) {
-        this.url = url;
-    }
-
-    public String getParams() {
-        return params;
-    }
-
-    public void setParams(String params) {
-        this.params = params;
-    }
-
-    public String getInfo() {
-        return info;
-    }
-
-    public void setInfo(String info) {
-        this.info = info;
-    }
-
-    public String getResponse() {
-        return response;
-    }
-
-    public void setResponse(String response) {
-        this.response = response;
-    }
-}
+    @ColumnInfo(name = "created_at")
+    var createdAt: Long? = null
+)

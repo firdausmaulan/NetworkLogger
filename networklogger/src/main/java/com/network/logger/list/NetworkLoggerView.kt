@@ -1,11 +1,9 @@
-package com.network.logger.list;
+package com.network.logger.list
 
-import com.network.logger.database.NetworkLoggerModel;
+import com.network.logger.database.NetworkLoggerModel
 
-import java.util.List;
-
-public interface NetworkLoggerView {
-    void showLoading();
-    void hideLoading();
-    void showData(List<NetworkLoggerModel> list);
+interface NetworkLoggerView {
+    fun showLoading()
+    fun hideLoading()
+    fun showData(list: List<NetworkLoggerModel?>?)
 }

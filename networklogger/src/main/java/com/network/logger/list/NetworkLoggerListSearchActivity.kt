@@ -1,84 +1,76 @@
-package com.network.logger.list;
+package com.network.logger.list
 
-import android.content.Intent;
-import android.os.Bundle;
-import android.widget.EditText;
-import android.widget.ImageView;
+import android.content.Intent
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
+import androidx.recyclerview.widget.RecyclerView
+import com.network.logger.R
+import com.network.logger.database.AppDatabase
+import com.network.logger.database.NetworkLoggerModel
+import com.network.logger.databinding.ActivityNetworkLoggerSearchBinding
+import com.network.logger.detail.NetworkLoggerDetailActivity
+import com.network.logger.util.Constant
+import com.network.logger.util.EditTextDelay
+import kotlinx.coroutines.launch
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.RecyclerView;
+class NetworkLoggerListSearchActivity : AppCompatActivity(), NetworkLoggerView {
 
-import com.network.logger.R;
-import com.network.logger.database.AppDatabase;
-import com.network.logger.database.NetworkLoggerModel;
-import com.network.logger.detail.NetworkLoggerDetailActivity;
-import com.network.logger.util.Constant;
-import com.network.logger.util.EditTextDelay;
+    private var binding: ActivityNetworkLoggerSearchBinding? = null
+    private var presenter: NetworkLoggerPresenter? = null
+    private var editTextDelay: EditTextDelay? = null
+    private var networkLoggerAdapter: NetworkLoggerAdapter? = null
 
-import java.util.List;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding = ActivityNetworkLoggerSearchBinding.inflate(layoutInflater)
+        setContentView(binding?.root)
 
-public class NetworkLoggerListSearchActivity extends AppCompatActivity implements NetworkLoggerView {
+        setView()
+        setAction()
 
-    private NetworkLoggerPresenter presenter;
-
-    private EditText etSearch;
-    private EditTextDelay editTextDelay;
-    private ImageView ivBack;
-    private NetworkLoggerAdapter networkLoggerAdapter;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_network_logger_search);
-
-        setView();
-        setAction();
-
-        presenter = new NetworkLoggerPresenter(this, this, AppDatabase.getAppDatabase());
+        presenter = NetworkLoggerPresenter(this, AppDatabase.getAppDatabase())
     }
 
-    private void setView() {
-        ivBack = findViewById(R.id.ivBack);
-        etSearch = findViewById(R.id.etSearch);
-        editTextDelay = new EditTextDelay(this);
-        RecyclerView rvVolleyLogger = findViewById(R.id.rvVolleyLogger);
-        networkLoggerAdapter = new NetworkLoggerAdapter(this);
-        rvVolleyLogger.setAdapter(networkLoggerAdapter);
+    private fun setView() {
+        editTextDelay = EditTextDelay(this)
+        val rvVolleyLogger = findViewById<RecyclerView>(R.id.rvVolleyLogger)
+        networkLoggerAdapter = NetworkLoggerAdapter(this)
+        rvVolleyLogger.adapter = networkLoggerAdapter
     }
 
-    private void setAction() {
-        ivBack.setOnClickListener(view -> finish());
+    private fun setAction() {
+        binding?.ivBack?.setOnClickListener { finish() }
 
-        etSearch.addTextChangedListener(editTextDelay.setListener(data -> {
-            networkLoggerAdapter.clear();
-            if (data != null && !data.isEmpty()) presenter.getSearchData(data);
-        }));
+        binding?.etSearch?.addTextChangedListener(editTextDelay?.setListener(object : EditTextDelay.Listener{
+            override fun onTextChanged(data: String?) {
+                networkLoggerAdapter?.clear()
+                if (!data.isNullOrEmpty()) {
+                    lifecycleScope.launch { presenter?.getSearchData(data) }
+                }
+            }
+        }))
 
-        networkLoggerAdapter.setClickListener((view, model) -> {
-            Intent intent = new Intent(this, NetworkLoggerDetailActivity.class);
-            intent.putExtra(Constant.UID, model.getUid());
-            startActivity(intent);
-        });
+        networkLoggerAdapter?.setClickListener { _: View?, model: NetworkLoggerModel? ->
+            val intent = Intent(this, NetworkLoggerDetailActivity::class.java)
+            intent.putExtra(Constant.UID, model?.uid)
+            startActivity(intent)
+        }
     }
 
-    @Override
-    public void showData(List<NetworkLoggerModel> list) {
-        networkLoggerAdapter.addList(list);
+    override fun showData(list: List<NetworkLoggerModel?>?) {
+        networkLoggerAdapter?.addList(list)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        presenter.unBind();
+    override fun onDestroy() {
+        super.onDestroy()
+        presenter?.unBind()
     }
 
-    @Override
-    public void showLoading() {
-
+    override fun showLoading() {
     }
 
-    @Override
-    public void hideLoading() {
-
+    override fun hideLoading() {
     }
 }

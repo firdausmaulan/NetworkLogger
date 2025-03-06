@@ -1,54 +1,44 @@
-package com.network.logger.util;
+package com.network.logger.util
 
-import android.text.Editable;
-import android.text.TextWatcher;
+import android.text.Editable
+import android.text.TextWatcher
+import androidx.fragment.app.FragmentActivity
+import java.util.Timer
+import java.util.TimerTask
 
-import androidx.fragment.app.FragmentActivity;
+class EditTextDelay(private val context: FragmentActivity?) : TextWatcher {
+    private var timer = Timer()
 
-import java.util.Timer;
-import java.util.TimerTask;
+    var listener: Listener? = null
 
-public class EditTextDelay implements TextWatcher {
-
-    private final FragmentActivity context;
-    private Timer timer = new Timer();
-
-    public Listener listener;
-
-    public interface Listener {
-        void onTextChanged(String data);
+    interface Listener {
+        fun onTextChanged(data: String?)
     }
 
-    public TextWatcher setListener(Listener listener) {
-        this.listener = listener;
-        return this;
+    fun setListener(listener: Listener?): TextWatcher {
+        this.listener = listener
+        return this
     }
 
-    public EditTextDelay(FragmentActivity context) {
-        this.context = context;
+    override fun beforeTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
     }
 
-    @Override
-    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
+    override fun onTextChanged(charSequence: CharSequence, i: Int, i1: Int, i2: Int) {
     }
 
-    @Override
-    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-    }
-
-    @Override
-    public void afterTextChanged(final Editable editable) {
-        timer.cancel();
-        timer = new Timer();
+    override fun afterTextChanged(editable: Editable) {
+        timer.cancel()
+        timer = Timer()
         timer.schedule(
-                new TimerTask() {
-                    @Override
-                    public void run() {
-                        if (context == null) return;
-                        context.runOnUiThread(() -> listener.onTextChanged(editable.toString().trim()));
-                    }
-                }, 1000);
+            object : TimerTask() {
+                override fun run() {
+                    if (context == null) return
+                    context.runOnUiThread(Runnable {
+                        listener?.onTextChanged(
+                            editable.toString().trim { it <= ' ' })
+                    })
+                }
+            }, 1000
+        )
     }
 }
