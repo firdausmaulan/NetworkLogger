@@ -9,7 +9,7 @@ import androidx.room.RoomDatabase;
 import com.network.logger.NetworkLoggerApp;
 import com.network.logger.R;
 
-@Database(entities = {NetworkLoggerModel.class}, version = 2)
+@Database(entities = {NetworkLoggerModel.class}, version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;

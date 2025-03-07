@@ -1,5 +1,0 @@
-jdk:
- - openjdk17
-install:
- - ./gradlew :networklogger:build :networklogger:publishToMavenLocal -x :networklogger:test
- - find . -name "*.aar"
