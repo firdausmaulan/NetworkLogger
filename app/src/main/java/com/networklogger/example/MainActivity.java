@@ -42,8 +42,8 @@ public class MainActivity extends AppCompatActivity {
             model.setUrl("https://www.test.com/");
             model.setHeader("Authorization Bearer abcde12345");
             model.setParams("{\n" +
-                    "    \"name\":\"Test\",\n" +
-                    "    \"Age\":20\n" +
+                    "    \"name\":\"VGVzdA==\",\n" +
+                    "    \"Age\":MjA=\n" +
                     "}");
             model.setInfo("{\n" +
                     "    \"name\":\"Test\",\n" +
