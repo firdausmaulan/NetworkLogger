@@ -3,7 +3,7 @@ apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     namespace = "com.networklogger.example"
-    compileSdkVersion 34
+    compileSdk 34
     defaultConfig {
         applicationId "com.networklogger.example"
         minSdkVersion 21

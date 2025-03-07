@@ -17,6 +17,6 @@
 2. Add simple barcode scanner to your project
 ```
   dependencies {
-     implementation 'com.github.firdausmaulan:NetworkLogger:1.7.3'
+     implementation 'com.github.firdausmaulan:NetworkLogger:1.7.5'
   }
 ```
