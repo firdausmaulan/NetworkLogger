@@ -6,6 +6,6 @@ dependencyResolutionManagement {
         gradlePluginPortal()
     }
 }
-rootProject.name='VolleyLogger'
+rootProject.name='NetworkLogger'
 include ':app'
 include ':networklogger'

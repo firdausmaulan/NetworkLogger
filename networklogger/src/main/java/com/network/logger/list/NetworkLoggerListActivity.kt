@@ -33,7 +33,7 @@ class NetworkLoggerListActivity : AppCompatActivity(), NetworkLoggerView {
 
     private fun setView() {
         networkLoggerAdapter = NetworkLoggerAdapter(this)
-        binding?.rvVolleyLogger?.adapter = networkLoggerAdapter
+        binding?.rvNetworkLogger?.adapter = networkLoggerAdapter
     }
 
     private fun setAction() {

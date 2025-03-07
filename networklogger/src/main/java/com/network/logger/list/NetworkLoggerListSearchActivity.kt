@@ -35,9 +35,8 @@ class NetworkLoggerListSearchActivity : AppCompatActivity(), NetworkLoggerView {
 
     private fun setView() {
         editTextDelay = EditTextDelay(this)
-        val rvVolleyLogger = findViewById<RecyclerView>(R.id.rvVolleyLogger)
         networkLoggerAdapter = NetworkLoggerAdapter(this)
-        rvVolleyLogger.adapter = networkLoggerAdapter
+        binding?.rvNetworkLogger?.adapter = networkLoggerAdapter
     }
 
     private fun setAction() {
